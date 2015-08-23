@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+    <resources mapping="*.html" location="/"/>
+    
+	<interceptors>
+		<beans:bean class="org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor">
+			<beans:property name="entityManagerFactory" ref="entityManagerFactory"/>
+		</beans:bean>
+		
+		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de -->
+		<beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+        
+		<beans:bean class="com.def.springmvc.web.interceptor.UserLoginSessionInterceptor"/>
+		 
+		<!-- Remember Me Interceptor
+		<beans:bean class="com.def.springmvc.web.interceptor.RememberMeInterceptor"/>
+		 -->
+				
+		<!-- Object expose interceptor 
+		<beans:bean class="com.def.springmvc.web.interceptor.ObjectExposeInterceptor"/>
+		-->
+
+		
+		
+	</interceptors>    
+    
+    
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<!--  
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	-->
+	<!-- 设置freeMarker的配置文件路径 -->
+	
+	<beans:bean id="freemarkerConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+	    <beans:property name="location" value="classpath:freemarker.properties"/>
+	</beans:bean>
+    <!-- 配置freeMarker视图解析器 -->  
+    <beans:bean id="viewResolverFtl" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">  
+        <beans:property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>  
+        <beans:property name="contentType" value="text/html; charset=utf-8"/>  
+        <beans:property name="cache" value="true" />  
+        <beans:property name="prefix" value="/WEB-INF/views/" />         
+        <beans:property name="suffix" value=".ftl" />  
+        <beans:property name="order" value="0"/>  
+    </beans:bean>  
+      
+    <!-- 配置freeMarker的模板路径 -->  
+    <beans:bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
+        <beans:property name="templateLoaderPath">  
+            <beans:value>/</beans:value>  
+        </beans:property>  
+        <beans:property name="freemarkerVariables">  
+            <beans:map>  
+                <beans:entry key="xml_escape" value-ref="fmXmlEscape" />  
+            </beans:map>  
+        </beans:property>  
+        <beans:property name="defaultEncoding">  
+            <beans:value>utf-8</beans:value>  
+        </beans:property>  
+        <beans:property name="freemarkerSettings">  
+            <beans:props>  
+                <beans:prop key="template_update_delay">3600</beans:prop>  
+            </beans:props>  
+        </beans:property>  
+    </beans:bean>  
+       
+    <beans:bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/> 
+    
+    
+	<context:component-scan base-package="com.def.springmvc.web" />
+	
+	
+	
+</beans:beans>
